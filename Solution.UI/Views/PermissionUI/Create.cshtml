@@ -1,0 +1,105 @@
+﻿@model Solution.Common.ViewModel.PermissionVM
+
+@{
+    ViewData["Title"] = "Create New Permission";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2>Permission</h2>
+
+    <div class="right-wrapper text-end">
+        <ol class="breadcrumbs">
+            <li>
+                <a asp-controller="Home" asp-action="Index">
+                    <i class="bx bx-home-alt"></i>
+                </a>
+            </li>
+            <li><span><a href="@Url.Action("Index", "PermissionUI")">Permission</a></span></li>
+            <li><span>Create</span></li>
+        </ol>
+        <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fas fa-chevron-left"></i></a>
+    </div>
+</header>
+
+<section class="card col-md-6">
+    <header class="card-header">
+        <h2 class="card-title">Create New Permission</h2>
+    </header>
+    <div class="card-body">
+        <form id="Createpermission" asp-action="Create" method="post">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label asp-for="PermissionName" class="control-label">Permission Name<span class="text-danger">*</span></label>
+                        <input asp-for="PermissionName" class="form-control" />
+                        <span asp-validation-for="PermissionName" class="text-danger"></span>
+                    </div>
+                    <br />
+                    <div class="form-group">
+                        <label asp-for="Controller" class="control-label">Controller<span class="text-danger">*</span></label>
+                        <input asp-for="Controller" class="form-control"/>
+                        <span asp-validation-for="Controller" class="text-danger"></span>
+                    </div>
+                    <br />
+
+                    <div class="form-group">
+                        <label asp-for="Action" class="control-label">Action<span class="text-danger">*</span></label>
+                        <input asp-for="Action" class="form-control" />
+                        <span asp-validation-for="Action" class="text-danger"></span>
+                    </div>
+                    <br />
+                    <div class="checkbox-custom checkbox-default">
+                        <input type="checkbox" class="custom-control-input" id="IsDefault" name="IsDefault" value="true" @(Model.IsDefault == true ? "checked" : "")>
+                        <label class="custom-control-label" for="IsDefault">Is Default</label>
+                    </div>
+
+                    <br />
+                    <div id="roleCheckboxes" style="display: none;">
+                        <h5>For Roles</h5>
+                        @foreach (var role in Model.Roles)
+                        {
+                            <div class="checkbox-custom checkbox-default">
+                                <input class="form-check-input" type="checkbox" name="SelectedRoles" value="@role.Id" @(Model.SelectedRoles.Contains(role.Id) ? "checked" : "") id="@role.Id">
+                                <label class="form-check-label" for="@role.Id">
+                                    @role.Name
+                                </label>
+                            </div>
+                        }
+
+                    </div>
+                    <br />
+
+                    <div class="form-group text-end">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                        <a href="@Url.Action("Index", "PermissionUI")" class="btn btn-warning">Back</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<script>
+    $(document).ready(function () {
+        $('#IsDefault').change(function () {
+            if ($(this).is(':checked')) {
+                $('#roleCheckboxes').show();
+            } else {
+                $('#roleCheckboxes').hide();
+            }
+        });
+
+        // Automatically trigger change event on page load in case IsDefault is checked
+        $('#IsDefault').trigger('change');
+    });
+    function resetForm() {
+        document.getElementById('Createpermission').reset();
+    }
+</script>

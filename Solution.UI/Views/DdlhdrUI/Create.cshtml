@@ -1,0 +1,64 @@
+﻿@model Solution.Common.ViewModel.DdlhdrVM
+
+@{
+    ViewData["Title"] = "Create New Ddlhdr";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2>Ddlhdr</h2>
+    <div class="right-wrapper text-end">
+        <ol class="breadcrumbs">
+            <li>
+                <a asp-controller="Home" asp-action="Index">
+                    <i class="bx bx-home-alt"></i>
+                </a>
+            </li>
+            <li><span><a href="@Url.Action("Index", "DdlhdrUI")">Ddlhdr</a></span></li>
+            <li><span>Create</span></li>
+        </ol>
+        <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fas fa-chevron-left"></i></a>
+    </div>
+</header>
+
+<section class="card col-md-6">
+    <header class="card-header">
+        <h2 class="card-title">Create New Ddlhdr</h2>
+    </header>
+    <div class="card-body">
+        <form id="Createcompany" asp-action="Create" method="post">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label asp-for="Ddlname" class="control-label">Ddl Name</label>
+                        <input asp-for="Ddlname" class="form-control" />
+                        <span asp-validation-for="Ddlname" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Ddldesciption" class="control-label">Ddldesciption</label>
+                        <input asp-for="Ddldesciption" class="form-control" />
+                        <span asp-validation-for="Ddldesciption" class="text-danger"></span>
+                    </div>
+
+            <!-- Add additional rows and columns as needed for remaining fields -->
+                <div class="form-group text-end">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                    <a href="@Url.Action("Index", "DdlhdrUI")" class="btn btn-warning">Back</a>
+                </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<script>
+    function resetForm() {
+        document.getElementById('Createcompany').reset();
+    }
+</script>

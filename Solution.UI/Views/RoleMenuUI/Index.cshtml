@@ -1,0 +1,202 @@
+﻿@{
+    ViewData["Title"] = "Role Menu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2>Role Menu</h2>
+
+    <div class="right-wrapper text-end">
+        <ol class="breadcrumbs">
+            <li>
+                <a asp-controller="Home" asp-action="Index">
+                    <i class="bx bx-home-alt"></i>
+                </a>
+            </li>
+            <li><span>Role Menu</span></li>
+            <li><span>Index</span></li>
+        </ol>
+        <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fas fa-chevron-left"></i></a>
+    </div>
+</header>
+<!-- start: page -->
+<section class="card">
+    <header class="card-header">
+        <div class="card-actions">
+           
+        </div>
+
+        <h2 class="card-title">Role Menu</h2>
+    </header>
+    <div class="card-body">
+        <div id="kt_app_content" class="app-content flex-column-fluid">
+            <div class="app-container container-fluid" style="flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding: 0;">
+                <div class="row g-5 g-xl-10 mb-5 mb-xl-10">
+                    <div class="col-12">
+                        <div class="card card-flush" style="margin-bottom: 0; flex-grow: 1; display: flex; flex-direction: column;">
+                            <div class="col-4">
+                                    <div class="card-body d-flex flex-column justify-content-end">
+                                    <div class="mb-3">
+                                        <label for="rolesDropdown" class="form-label">Select Role:</label>
+                                        <select id="rolesDropdown" class="form-select" style="margin-left:14px">
+                                            <option value="">-- Select Role --</option>
+                                            @if (ViewBag.Roles != null)
+                                            {
+                                                foreach (var role in ViewBag.Roles)
+                                                {
+                                                    <option value="@role.Id">@role.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+
+                                    </div>
+                            </div>
+                            <div class="card-body d-flex flex-column justify-content-end">
+                                <div class="mb-8">
+                                    
+                                    <div class="card-body d-flex flex-column justify-content-end" style="margin-top: -20px;">
+                                        <table class="table table-bordered table-striped mb-0" id="MenuTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Select</th>
+                                                    <th>Title</th>
+                                                    <th>Description</th>
+                                                    <th>Parent ID</th>
+                                                    <th>Icon</th>
+                                                    <th>URL</th>
+                                                    <th>Menu Order</th>
+                                                    <th>Controller</th>
+                                                    <th>Page</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                              
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" style="float:right;">
+                                <button type="button" onclick="savePermissions()" class="btn btn-primary" style="float:right;">Save</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</section>
+
+
+<script>
+    $(document).ready(function () {
+        LoadMenus(); 
+
+        $('#rolesDropdown').change(function () {
+            var roleId = $(this).val();
+            if (roleId) {
+                LoadMenuForRole(roleId);
+            } else {
+                $(".menuCheckbox").prop('checked', false); 
+            }
+        });
+    });
+
+    function LoadMenuForRole(roleId) {
+        debugger;
+        $.ajax({
+            url: "/RoleMenuUI/GetMenusForRole?roleId=" + roleId,
+            type: "GET",
+            dataType: 'json',
+            success: function (response) {
+                debugger;
+                $(".menuCheckbox").prop('checked', false); 
+                response.forEach(function (menuId) {
+                    $(".menuCheckbox[data-menu-id='" + menuId + "']").prop('checked', true);
+                });
+            },
+            error: function (xhr, status, error) {
+                alert("Error loading menus for the selected role: " + error);
+            }
+        });
+    }
+
+    function LoadMenus() {
+        if ($.fn.dataTable.isDataTable("#MenuTable")) {
+            $("#MenuTable").DataTable().clear().destroy();
+        }
+
+        $("#MenuTable").DataTable({
+            processing: true,
+            serverSide: true,
+            responsive: true,
+            ajax: {
+                url: "/MenuUI/GetAllMenu",
+                type: "GET",
+                dataType: 'json',
+                data: function (d) {
+                    return {
+                        draw: d.draw,
+                        start: d.start,
+                        length: d.length,
+                        searchValue: d.search.value
+                    };
+                }
+            },
+            columns: [
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        return '<input type="checkbox" class="menuCheckbox" data-menu-id="' + row.id + '" >';
+                    }
+                },
+                { data: "title", name: "Title" },
+                { data: "descr", name: "Description" },
+                { data: "parentId", name: "Parent ID" },
+                { data: "icon", name: "Icon" },
+                { data: "url", name: "URL" },
+                { data: "menuOrder", name: "Menu Order" },
+                { data: "controller", name: "Controller" },
+                { data: "page", name: "Page" }
+            ]
+        });
+    }
+
+    function savePermissions() {
+        debugger;
+        var selectedMenus = [];
+        var dropdown = document.getElementById('rolesDropdown');
+        var roleId = dropdown.value;
+        var table = $("#MenuTable").DataTable();
+
+        $(".menuCheckbox:checked").each(function () {
+            var row = $(this).closest('tr');
+            var rowData = table.row(row).data(); 
+            var menuId = rowData.id; 
+            selectedMenus.push(menuId); 
+        });
+
+        var requestData = {
+            RoleId: roleId,
+            RoleMenuId: selectedMenus 
+        };
+
+        $.ajax({
+            url: "/RoleMenuUI/Create", 
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(requestData),
+            success: function (response) {
+                alert("Role menus saved successfully!");
+                window.location.href = "/RoleMenuUI/Index"; 
+            },
+            error: function (xhr, status, error) {
+                alert("Error saving role menus: " + error);
+            }
+        });
+    }
+</script>

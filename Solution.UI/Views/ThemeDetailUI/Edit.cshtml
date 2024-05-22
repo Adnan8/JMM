@@ -1,0 +1,109 @@
+﻿@model Solution.Common.ViewModel.ThemeDetailVM
+
+@{
+    ViewData["Title"] = "Edit ThemeDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2>Theme Detail</h2>
+    <div class="right-wrapper text-end">
+        <ol class="breadcrumbs">
+            <li>
+                <a asp-controller="Home" asp-action="Index">
+                    <i class="bx bx-home-alt"></i>
+                </a>
+            </li>
+            <li><span><a href="@Url.Action("Index", "ThemeDetailUI")">Theme Detail</a></span></li>
+            <li><span>Edit</span></li>
+        </ol>
+        <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fas fa-chevron-left"></i></a>
+    </div>
+</header>
+
+<section class="card">
+    <header class="card-header">
+        <h2 class="card-title">Edit ThemeDetail</h2>
+    </header>
+    <div class="card-body">
+        <form id="" asp-action="Edit" method="post">
+            <div class="row">
+                <div class="col-md-6 form-group color-picker-group">
+                    <label for="Secondarybg" class="control-label">Primarybg</label>
+                    <input type="color" id="primarybgcolour" value="@Model.Primarybg" >
+                    <input asp-for="Primarybg" class="form-control" data-tooltip="Enter the Primarybg" />
+                    <span asp-validation-for="Primarybg" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group color-picker-group">
+                    <label for="Primaryfg" class="control-label">Primaryfg</label>
+                    <input type="color" id="primaryfgcolour" value="@Model.Primaryfg" >
+                    <input asp-for="Primaryfg" class="form-control" data-tooltip="Enter the Primaryfg" />
+                    <span asp-validation-for="Primaryfg" class="text-danger"></span>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+
+                <div class="col-md-6 form-group color-picker-group">
+                    <label for="Secondarybg" class="control-label">Secondarybg</label>
+                    <input type="color" id="secondarybgcolour" value="@Model.Secondarybg" >
+                    <input asp-for="Secondarybg" class="form-control" data-tooltip="Enter the Secondarybg" />
+                    <span asp-validation-for="Secondarybg" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group color-picker-group">
+                    <label for="Secondaryfg" class="control-label">Secondaryfg</label>
+                    <input type="color" id="secondaryfgcolour" value="@Model.Secondaryfg" >
+                    <input asp-for="Secondaryfg" class="form-control" data-tooltip="Enter the Secondaryfg" />
+                    <span asp-validation-for="Secondaryfg" class="text-danger"></span>
+                </div>
+
+            </div>
+            <br />
+            <div class="row">
+
+                <div class="col-md-6 form-group color-picker-group">
+                    <label for="Tertiarybg" class="control-label">Tertiarybg</label>
+                    <input type="color" id="tertiarybgcolour" value="@Model.Tertiarybg" >
+                    <input asp-for="Tertiarybg" class="form-control" data-tooltip="Enter the Tertiarybg" />
+                    <span asp-validation-for="Tertiarybg" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group color-picker-group">
+                    <label for="Tertiaryfg" class="control-label">Tertiaryfg</label>
+                    <input type="color" id="tertiaryfgcolour" value="@Model.Tertiaryfg" >
+                    <input asp-for="Tertiaryfg" class="form-control" data-tooltip="Enter the Tertiaryfg" />
+                    <span asp-validation-for="Tertiaryfg" class="text-danger"></span>
+                </div>
+            </div>
+            <br />
+           @*  <div class="row">
+
+                <div class="col-md-6 form-group">
+                    <label asp-for="IsColourMenHeader" class="control-label">IsColourMenHeader</label>
+                    <input type="checkbox" asp-for="IsColourMenHeader" class="form-check-input" />
+                    <span asp-validation-for="IsColourMenHeader" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label asp-for="IsDarkMenu" class="control-label">IsDarkMenu</label>
+                    <input type="checkbox" asp-for="IsDarkMenu" class="form-check-input" />
+                    <span asp-validation-for="IsDarkMenu" class="text-danger"></span>
+                </div>
+            </div> *@
+            <br />
+            <div class="form-group" style="float:right;">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="@Url.Action("Index", "ThemeDetailUI")" class=" btn btn-active-color-warning">Back</a>
+
+            </div>
+        </form>
+
+
+    </div>
+</section>
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

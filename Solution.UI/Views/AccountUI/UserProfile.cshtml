@@ -1,0 +1,124 @@
+﻿@model Solution.Common.ViewModel.UserProfileVM
+@{
+    ViewData["Title"] = "User Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    // var profileImagePath = !string.IsNullOrEmpty(Model.Path) && Model.Path != "/"
+    // ? Model.Path
+    // : Url.Content("~/img/user.png");
+    //var profileImagePath = "/https://localhost:7183/api/wwwroot" + Model.Path;
+     //Model.Path = profileImagePath;
+
+}
+@* <p>Image Path: @profileImagePath</p> *@
+<header class="page-header">
+    <h2>User Profile</h2>
+    <div class="right-wrapper text-end">
+        <ol class="breadcrumbs">
+            <li>
+                <a asp-controller="Home" asp-action="Index">
+                    <i class="bx bx-home-alt"></i>
+                </a>
+            </li>
+            <li><span>User Profile</span></li>
+        </ol>
+        <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fas fa-chevron-left"></i></a>
+    </div>
+</header>
+
+<section class="card">
+    <header class="card-header">
+        <h2 class="card-title">User Profile</h2>
+    </header>
+    <div class="card-body">
+        <form id="UserProfile" asp-action="UserProfile" method="post" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-4 d-flex align-items-center justify-content-center position-relative">
+                    <img id="profileImage" src="@(!string.IsNullOrEmpty(Model.Image) ? "data:image/jpeg;base64," + Model.Image : Url.Content("~/img/user.png"))" alt="Profile Image" class="img-fluid" style="max-width: 100%; height: auto; border-radius: 10px;" />
+
+                   @*  <img id="profileImage" src="@(!string.IsNullOrEmpty(Model.Path) && Model.Path != "/" ? Model.Path : Url.Content("~/img/user.png"))" alt="Profile Image" class="img-fluid" style="max-width: 100%; height: auto; border-radius: 10px;" /> *@
+                    <input type="file" id="imageInput" name="profileImage" accept="image/*" onchange="updateImagePreview(this)" style="display: none;" />
+                    <i class="fas fa-edit position-absolute" style="bottom: 10px; right: 10px; font-size: 1.5rem; cursor: pointer; color: #007bff;" onclick="document.getElementById('imageInput').click();"></i>
+                </div>
+
+               @*  <div class="col-md-4 d-flex align-items-center justify-content-center position-relative">
+                    <img id="profileImage"
+                         src="@(!string.IsNullOrEmpty(Model.Path) && Model.Path != "/" ? Model.Path : Url.Content("~/img/user.png"))"
+                         alt="Profile Image"
+                         class="img-fluid"
+                         style="max-width: 100%; height: auto; border-radius: 10px;" />
+                    <input type="file" id="imageInput" accept="image/*" onchange="updateImagePreview(this)" style="display: none;" />
+                    <!-- Replace button with an edit icon -->
+                    <i class="fas fa-edit position-absolute" style="bottom: 10px; right: 10px; font-size: 1.5rem; cursor: pointer; color: #007bff;" onclick="document.getElementById('imageInput').click();"></i>
+                </div> *@
+                @* <div class="col-md-4 d-flex align-items-center justify-content-center position-relative">
+                    <img src="@profileImagePath" alt="Profile Image" class="img-fluid" style="max-width: 100%; height: auto; border-radius: 10px;" />
+                    <input type="file" id="imageInput" name="ProfileImage" accept="image/*" onchange="updateImagePreview(this)" style="display: none;" />
+                    <i class="fas fa-edit position-absolute" style="bottom: 10px; right: 10px; font-size: 1.5rem; cursor: pointer; color: #007bff;" onclick="document.getElementById('imageInput').click();"></i>
+                </div> *@
+                @*  <div class="col-md-4 d-flex align-items-center justify-content-center position-relative">
+                    <img id="profileImage" src="@Model.Path" alt="Profile Image" class="img-fluid" style="max-width: 100%; height: auto; border-radius: 10px;" />
+                    <input type="file" id="imageInput" accept="image/*" onchange="updateImagePreview(this)" style="display: none;" />
+                    <!-- Replace button with an edit icon -->
+                    <i class="fas fa-edit position-absolute" style="bottom: 10px; right: 10px; font-size: 1.5rem; cursor: pointer; color: #007bff;" onclick="document.getElementById('imageInput').click();"></i>
+                </div>  *@
+               @*  <div class="col-md-4">
+                    <img id="profileImage" src="@Model.ProfileImageUrl" alt="Profile Image" class="img-fluid" style="border-radius: 10px;" />
+                    <label for="imageInput" class="fas fa-edit" style="cursor: pointer; color: #007bff;"> Change Photo</label>
+                    <input type="file" id="imageInput" name="ProfileImage" accept="image/*" onchange="updateImagePreview(this)" style="display: none;" />
+                </div> *@
+
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label asp-for="DisplayName" class="control-label">Display Name<span class="text-danger">*</span></label>
+                        <input asp-for="DisplayName" class="form-control" />
+                        <span class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Username" class="control-label">UserName</label>
+                        <input asp-for="Username" class="form-control" disabled/>
+                        <input type="hidden" asp-for="Username" value="@Model.Username" />
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Email" class="control-label">Email</label>
+                        <input asp-for="Email" class="form-control" disabled/>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                        <input type="hidden" name="Email" value="@Model.Email" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="CompanyName" class="control-label">Company</label>
+                        <input asp-for="CompanyName" class="form-control" disabled/>
+                        <span asp-validation-for="CompanyName" class="text-danger"></span>
+                        <input type="hidden" name="CompanyName" value="@Model.CompanyName" />
+                    </div>
+                  
+                    <div class="form-group">
+                        <label asp-for="RoleId" class="control-label">Role</label>
+                        <input asp-for="RoleId" class="form-control" disabled/>
+                        <span asp-validation-for="RoleId" class="text-danger"></span>
+                        <input type="hidden" name="RoleId" value="@Model.RoleId" />
+                    </div>
+                    <div class="form-group text-end">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<script>
+    document.getElementById('imageInput').addEventListener('change', event => {
+        const file = event.target.files[0]; // Get the first file selected by the user
+        if (file) { // If there is a file selected
+            const reader = new FileReader(); // Create a new FileReader
+            reader.onload = e => document.getElementById('profileImage').src = e.target.result; // Set the src of the img to the read file
+            reader.readAsDataURL(file); // Read the file as a Data URL (base64)
+        }
+    });
+</script>

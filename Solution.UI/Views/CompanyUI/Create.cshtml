@@ -1,0 +1,96 @@
+﻿@model Solution.Common.ViewModel.CompanyVM
+
+@{
+    ViewData["Title"] = "Create New Company";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2>Company</h2>
+    <div class="right-wrapper text-end">
+        <ol class="breadcrumbs">
+            <li>
+                <a asp-controller="Home" asp-action="Index">
+                    <i class="bx bx-home-alt"></i>
+                </a>
+            </li>
+            <li><span><a href="@Url.Action("Index", "CompanyUI")">Company</a></span></li>
+            <li><span>Create</span></li>
+        </ol>
+        <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fas fa-chevron-left"></i></a>
+    </div>
+</header>
+
+<section class="card col-md-6">
+    <header class="card-header">
+        <h2 class="card-title">Create New Company</h2>
+    </header>
+    <div class="card-body">
+        <form id="Createcompany" asp-action="Create" method="post" enctype="multipart/form-data">
+            <!-- Adjusted row with an offset to center the form -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label asp-for="Compname" class="control-label">Company Name<span class="text-danger">*</span></label>
+                        <input asp-for="Compname" class="form-control" />
+                        <span asp-validation-for="Compname" class="text-danger"></span>
+                    </div>
+                    <br />
+                    <div class="form-group">
+                        <label asp-for="Abn" class="control-label">ABN<span class="text-danger">*</span></label>
+                        <input asp-for="Abn" class="form-control" />
+                        <span asp-validation-for="Abn" class="text-danger"></span>
+                    </div>
+                    <br />
+                    <div class="form-group">
+                        <label asp-for="Addr1" class="control-label">Address<span class="text-danger">*</span></label>
+                        <input asp-for="Addr1" class="form-control" />
+                        <span asp-validation-for="Addr1" class="text-danger"></span>
+                    </div>
+                    <br />
+                    <div class="form-group">
+                        <label asp-for="City" class="control-label">City</label>
+                        <input asp-for="City" class="form-control" data-tooltip="Enter the city of company" />
+                        <span asp-validation-for="City" class="text-danger"></span>
+                    </div>
+                    <br />
+                        <div class="checkbox-custom checkbox-default">
+                            <input type="checkbox" class="custom-control-input" id="DefaultPermissions" name="DefaultPermissions" value="true" @(Model.DefaultPermissions == true ? "checked" : "")>
+                            <label class="custom-control-label" for="DefaultPermissions">Add Default Permissions</label>
+                        </div>
+                    <br />
+                    @* <div class="row">
+                    <div class="col-md-6 form-group">
+                    <label for="logo" class="control-label">Company Logo</label>
+                    <input type="file" asp-for="Logo" class="form-control" />
+                    <span asp-validation-for="Logo" class="text-danger"></span>
+                    </div>
+                    </div> *@
+                    <br />
+                    <div class="form-group text-end">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                        <a href="@Url.Action("Index", "CompanyUI")" class="btn btn-warning">Back</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+
+
+
+
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<script>
+    function resetForm() {
+        document.getElementById('Createcompany').reset();
+    }
+</script>

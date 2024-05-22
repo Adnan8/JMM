@@ -1,0 +1,143 @@
+﻿@using HashidsNet
+@using Newtonsoft.Json
+@using Solution.Common
+@using Solution.Common.ViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    var menusJson = Context.Session.GetString("RoleData");
+    List<MenuVM> menus = new List<MenuVM>();
+    Hashids _hashids = new Hashids(ConstantUnique.HashidsName, ConstantUnique.HashidsLength);
+
+    if (!string.IsNullOrEmpty(menusJson))
+    {
+        try
+        {
+            var roleMenuWrappers = JsonConvert.DeserializeObject<List<UserRoleMenusVM>>(menusJson);
+            if (roleMenuWrappers != null)
+            {
+                var flatMenus = roleMenuWrappers
+                    .Where(rmw => rmw.RoleMenus != null) // Ensure RoleMenus is not null before accessing it
+                    .SelectMany(rmw => rmw.RoleMenus)
+                    .OrderBy(m => m.MenuOrder)
+                    .ToList();
+
+                // Check if flatMenus is empty and handle accordingly
+                if (!flatMenus.Any())
+                {
+                    // Log or handle the case where no menus are defined for the role
+                }
+
+                menus = flatMenus
+                    .Where(m => m.ParentId == null && m != null) // Additional null check on m
+                    .Select(parent => new MenuVM
+                            {
+                                Id = parent.Id,
+                                Title = parent.Title,
+                                Descr = parent.Descr,
+                                ParentId = parent.ParentId,
+                                Icon = parent.Icon,
+                                Url = parent.Url,
+                                MenuOrder = parent.MenuOrder,
+                                Controller = parent.Controller,
+                                Page = parent.Page,
+                                IsDefault = parent.IsDefault,
+                                MenuLevel = parent.MenuLevel,
+                                Children = GetChildren(flatMenus, DecodeHashid(parent.Id))
+                            })
+                    .ToList();
+            }
+        }
+        catch (JsonException ex)
+        {
+            // Log the error or handle it as per your error handling policy
+        }
+    }
+
+    List<MenuVM> GetChildren(List<MenuVM> allMenus, int? parentId) => allMenus
+        .Where(m => m.ParentId == parentId)
+        .Select(child => new MenuVM
+                {
+                    Id = child.Id,
+                    Title = child.Title,
+                    Descr = child.Descr,
+                    ParentId = child.ParentId,
+                    Icon = child.Icon,
+                    Url = child.Url,
+                    MenuOrder = child.MenuOrder,
+                    Controller = child.Controller,
+                    Page = child.Page,
+                    IsDefault = child.IsDefault,
+                    MenuLevel = child.MenuLevel,
+                    Children = GetChildren(allMenus, DecodeHashid(child.Id))
+                }).ToList();
+
+    int? DecodeHashid(string hashid)
+    {
+        var numbers = _hashids.Decode(hashid);
+        if (numbers.Length > 0)
+        {
+            return numbers[0];
+        }
+        else
+        {
+            var number = Convert.ToInt32(hashid);
+            return number;
+        }
+        return null;
+    }
+
+
+}
+
+<aside id="sidebar-left" class="sidebar-left">
+    <div class="sidebar-header">
+        <div class="sidebar-title">Navigation</div>
+        <div class="sidebar-toggle d-none d-md-block" data-toggle-class="sidebar-left-collapsed" data-target="html" data-fire-event="sidebar-left-toggle">
+            <i class="fas fa-bars" aria-label="Toggle sidebar"></i>
+        </div>
+    </div>
+    <div class="nano">
+        <div class="nano-content">
+            <nav id="menu" class="nav-main" role="navigation">
+                <ul class="nav nav-main">
+                    @foreach (var menu in menus)
+                    {
+                        <li class="nav-item @(menu.Children.Any() ? "nav-parent" : "")">
+                            <a class="nav-link" asp-controller="@menu.Controller" asp-action="@menu.Page">
+                                <i class="@menu.Icon"></i>
+                                <span>@menu.Title</span>
+                            </a>
+                            @if (menu.Children.Any())
+                            {
+                                <ul class="nav nav-children">
+                                    @foreach (var childMenu in menu.Children)
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link" asp-controller="@childMenu.Controller" asp-action="@childMenu.Page">
+                                                <i class="@childMenu.Icon"></i>
+                                                <span>@childMenu.Title</span>
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <script>
+        // Maintain Scroll Position
+        if (typeof localStorage !== 'undefined') {
+            if (localStorage.getItem('sidebar-left-position') !== null) {
+                var initialPosition = localStorage.getItem('sidebar-left-position'),
+                    sidebarLeft = document.querySelector('#sidebar-left .nano-content');
+
+                sidebarLeft.scrollTop = initialPosition;
+            }
+        }
+    </script>
+</aside>
+
+

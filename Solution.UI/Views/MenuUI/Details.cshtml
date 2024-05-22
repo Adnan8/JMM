@@ -1,0 +1,106 @@
+﻿@model Solution.Common.ViewModel.MenuVM
+
+@{
+    ViewData["Title"] = "Details Menu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2>Menu</h2>
+
+    <div class="right-wrapper text-end">
+        <ol class="breadcrumbs">
+            <li>
+                <a asp-controller="Home" asp-action="Index">
+                    <i class="bx bx-home-alt"></i>
+                </a>
+            </li>
+            <li><span><a href="@Url.Action("Index", "MenuUI")">Menu</a></span></li>
+            <li><span>Edit</span></li>
+        </ol>
+        <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fas fa-chevron-left"></i></a>
+    </div>
+</header>
+<section class="card">
+    <header class="card-header">
+        <div class="card-actions">
+            <a href="@Url.Action("Edit", "MenuUI", new { id = Model.Id })" class="btn btn-primary btn-square" title="Add">
+                <i class="bi bi-pencil"></i>
+            </a>
+        </div>
+        <h2 class="card-title">Menu Detail</h2>
+    </header>
+    <div class="card-body">
+        <form  method="post">
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label asp-for="Title" class="control-label">Menu Title</label>
+                    <input asp-for="Title" class="form-control" disabled />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label asp-for="Descr" class="control-label">Description</label>
+                    <input asp-for="Descr" class="form-control" disabled />
+                    <span asp-validation-for="Descr" class="text-danger"></span>
+                </div>
+            </div>
+            <br />
+
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label asp-for="ParentId" class="control-label">Parent ID</label>
+                    <input asp-for="ParentId" class="form-control" disabled />
+                    <span asp-validation-for="ParentId" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label asp-for="Icon" class="control-label">Icon</label>
+                    <input asp-for="Icon" class="form-control" disabled />
+                    <span asp-validation-for="Icon" class="text-danger"></span>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label asp-for="Url" class="control-label">URL</label>
+                    <input asp-for="Url" class="form-control" disabled />
+                    <span asp-validation-for="Url" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label asp-for="MenuOrder" class="control-label">Menu Order</label>
+                    <input asp-for="MenuOrder" type="number" class="form-control" disabled />
+                    <span asp-validation-for="MenuOrder" class="text-danger"></span>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label asp-for="Controller" class="control-label">Controller</label>
+                    <input asp-for="Controller" class="form-control" disabled />
+                    <span asp-validation-for="Controller" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label asp-for="Page" class="control-label">Page</label>
+                    <input asp-for="Page" class="form-control" disabled />
+                    <span asp-validation-for="Page" class="text-danger"></span>
+                </div>
+            </div>
+
+            <br />
+            <div class="checkbox-custom checkbox-default">
+                <input type="checkbox" class="custom-control-input" id="IsDefault" name="IsDefault" value="true" @(Model.IsDefault == true ? "checked" : "") disabled>
+                <label class="custom-control-label" for="IsDefault">Is Default</label>
+            </div>
+
+            <br />
+            <br />
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

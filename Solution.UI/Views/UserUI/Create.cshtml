@@ -1,0 +1,84 @@
+﻿@model Solution.Common.ViewModel.UserVM
+@{
+    ViewData["Title"] = "Create New User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2>User</h2>
+    <div class="right-wrapper text-end">
+        <ol class="breadcrumbs">
+            <li>
+                <a asp-controller="Home" asp-action="Index">
+                    <i class="bx bx-home-alt"></i>
+                </a>
+            </li>
+            <li><span><a href="@Url.Action("Index", "UserUI")">User</a></span></li>
+            <li><span>Create</span></li>
+        </ol>
+        <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fas fa-chevron-left"></i></a>
+    </div>
+</header>
+
+<section class="card col-md-6">
+    <header class="card-header">
+        <h2 class="card-title">Create New User</h2>
+    </header>
+    <div class="card-body">
+        <form id="Createcompany" asp-action="Create" method="post">
+            <div class="row justify-content-md-center">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label asp-for="DisplayName" class="control-label">Display Name<span class="text-danger">*</span></label>
+                        <input asp-for="DisplayName" class="form-control" />
+                        <span  class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Email" class="control-label">Email</label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Password" class="control-label">Password</label>
+                        <input asp-for="Password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ConfirmPassword" class="control-label">Confirm Password</label>
+                        <input asp-for="ConfirmPassword" class="form-control" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="rolesDropdown" class="form-label">Select Role:</label>
+                        <select id="rolesDropdown" name="RoleId" class="form-select">
+                            <option value="">-- Select Role --</option>
+                            @if (ViewBag.Roles != null)
+                            {
+                                foreach (var role in ViewBag.Roles)
+                                {
+                                    <option value="@role.Name">@role.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group text-end">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                        <a href="@Url.Action("Index", "UserUIUI")" class="btn btn-warning">Back</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function resetForm() {
+            document.getElementById('Createcompany').reset();
+        }
+    </script>
+}

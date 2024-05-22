@@ -1,0 +1,156 @@
+﻿@model Solution.Common.ViewModel.MenuVM
+
+@{
+    ViewData["Title"] = "Edit Menu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2>Menu</h2>
+    <div class="right-wrapper text-end">
+        <ol class="breadcrumbs">
+            <li>
+                <a asp-controller="Home" asp-action="Index">
+                    <i class="bx bx-home-alt"></i>
+                </a>
+            </li>
+            <li><span><a href="@Url.Action("Index", "MenuUI")">Menu</a></span></li>
+            <li><span>Edit</span></li>
+        </ol>
+        <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fas fa-chevron-left"></i></a>
+    </div>
+</header>
+
+<section class="card">
+    <header class="card-header">
+        <h2 class="card-title">Edit Menu</h2>
+    </header>
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Title" class="control-label">Menu Title<span class="text-danger">*</span></label>
+                        <input asp-for="Title" class="form-control" data-tooltip="Enter menu title" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Descr" class="control-label">Description</label>
+                        <input asp-for="Descr" class="form-control" data-tooltip="Enter menu description" />
+                        <span asp-validation-for="Descr" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <br />
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="ParentId" class="control-label">Parent Menu</label>
+                        <select asp-for="ParentId" asp-items="@Model.ParentMenus" class="form-control">
+                            <option value="">Select a parent menu</option>
+                        </select>
+                        <span asp-validation-for="ParentId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Icon" class="control-label">Icon</label>
+                        <input asp-for="Icon" class="form-control" data-tooltip="Enter menu icon" />
+                        <span asp-validation-for="Icon" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <br />
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Url" class="control-label">Url<span class="text-danger">*</span></label>
+                        <input asp-for="Url" class="form-control" data-tooltip="Enter menu URL" />
+                        <span asp-validation-for="Url" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="MenuOrder" class="control-label">Menu Order</label>
+                        <input asp-for="MenuOrder" class="form-control" data-tooltip="Enter menu order number" />
+                        <span asp-validation-for="MenuOrder" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <br />
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Controller" class="control-label">Controller<span class="text-danger">*</span></label>
+                        <input asp-for="Controller" class="form-control" data-tooltip="Enter menu controller" />
+                        <span asp-validation-for="Controller" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Page" class="control-label">Page<span class="text-danger">*</span></label>
+                        <input asp-for="Page" class="form-control" data-tooltip="Enter menu page" />
+                        <span asp-validation-for="Page" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <br />
+
+            <div class="checkbox-custom checkbox-default">
+                @if (Model.IsDefault.HasValue && Model.IsDefault.Value)
+                {
+                    <input type="checkbox" class="custom-control-input" id="IsDefault" name="IsDefault" value="true" checked disabled>
+                }
+                else
+                {
+                    <input type="checkbox" class="custom-control-input" id="IsDefault" name="IsDefault" value="true" @(Model.IsDefault == true ? "checked" : "")>
+                }
+                <label class="custom-control-label" for="IsDefault">Is Default</label>
+            </div>
+
+            <br />
+
+            <div id="roleCheckboxes">
+                <h5>Select Roles</h5>
+                @foreach (var role in Model.Roles)
+                {
+                    <div class="checkbox-custom checkbox-default">
+                        <input class="form-check-input" type="checkbox" name="SelectedRoles" value="@role.Id"
+                               id="role_@role.Id" @(role.IsSelected == true ? "checked='checked'" : "")>
+                        <label class="form-check-label" for="role_@role.Id">@role.Name</label>
+                    </div>
+                }
+            </div>
+
+            <br />
+            <br />
+
+            <div class="form-group" style="float:right; margin-top: 20px;">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="@Url.Action("Index", "MenuUI")" class="btn btn-warning">Back</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<script>
+    $(document).ready(function () {
+        $('#IsDefault').change(function () {
+            $('#roleCheckboxes').toggle(this.checked);
+        }).change(); // Ensure correct initial display
+    });
+</script>

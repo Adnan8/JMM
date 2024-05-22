@@ -1,0 +1,73 @@
+﻿@model Solution.Common.ViewModel.PermissionVM
+
+@{
+    ViewData["Title"] = "Details Permission";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2>Permission</h2>
+
+    <div class="right-wrapper text-end">
+        <ol class="breadcrumbs">
+            <li>
+                <a asp-controller="Home" asp-action="Index">
+                    <i class="bx bx-home-alt"></i>
+                </a>
+            </li>
+            <li><span><a href="@Url.Action("Index", "PermissionUI")">Permission</a></span></li>
+            <li><span>Edit</span></li>
+        </ol>
+        <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fas fa-chevron-left"></i></a>
+    </div>
+</header>
+<section class="card col-md-6">
+    <header class="card-header">
+        <div class="card-actions">
+            <a href="@Url.Action("Edit", "PermissionUI", new { id = Model.Id })" class="btn btn-primary btn-square" title="Add">
+                <i class="bi bi-pencil"></i>
+            </a>
+        </div>
+        <h2 class="card-title">Permission Detail</h2>
+    </header>
+    <div class="card-body">
+        <form id="Createpermission"  method="post">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label asp-for="PermissionName" class="control-label">Permission Name<span class="text-danger">*</span></label>
+                        <input asp-for="PermissionName" class="form-control" disabled/>
+                        <span asp-validation-for="PermissionName" class="text-danger"></span>
+                    </div>
+                    <br />
+                    <div class="form-group">
+                        <label asp-for="Controller" class="control-label">Controller<span class="text-danger">*</span></label>
+                        <input asp-for="Controller" class="form-control" disabled/>
+                        <span asp-validation-for="Controller" class="text-danger"></span>
+                    </div>
+                    <br />
+
+                    <div class="form-group">
+                        <label asp-for="Action" class="control-label">Action<span class="text-danger">*</span></label>
+                        <input asp-for="Action" class="form-control" disabled/>
+                        <span asp-validation-for="Action" class="text-danger"></span>
+                    </div>
+                    <br />
+                    <div class="checkbox-custom checkbox-default">
+                        <input type="checkbox" class="custom-control-input" id="IsDefault" name="IsDefault" value="true" @(Model.IsDefault == true ? "checked" : "") disabled>
+                        <label class="custom-control-label" for="IsDefault">Is Default</label>
+                    </div>
+
+                    <br />
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

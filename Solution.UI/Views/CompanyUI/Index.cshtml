@@ -1,0 +1,165 @@
+﻿@{
+    ViewData["Title"] = "Company List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+	<h2>Company</h2>
+
+	<div class="right-wrapper text-end">
+		<ol class="breadcrumbs">
+			<li>
+				<a asp-controller="Home" asp-action="Index">
+					<i class="bx bx-home-alt"></i>
+				</a>
+			</li>
+			<li><span>Company</span></li>
+			<li><span>Index</span></li>
+		</ol>
+        <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fas fa-chevron-left"></i></a>
+	</div>
+</header>
+<!-- start: page -->
+<section class="card">
+	<header class="card-header">
+		<div class="card-actions">
+            <a href="@Url.Action("Create", "CompanyUI")" class="btn btn-primary btn-square" title="Add">
+                <i class="bi bi-plus"></i>
+            </a>
+		</div>
+
+		<h2 class="card-title">Companies</h2>
+	</header>
+	<div class="card-body">
+		<table class="table table-bordered table-striped mb-0" id="datatable-editable">
+			<thead>
+				<tr>
+					<th>Company Name</th>
+					<th>ABN</th>
+					<th>Address</th>
+					<th>City</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- Rows will be populated by DataTables -->
+			</tbody>
+		</table>
+
+	</div>
+</section>
+<!-- end: page -->
+<script>
+    $(document).ready(function () {
+        LoadCompanies();
+    });
+
+    function LoadCompanies() {
+        if ($.fn.dataTable.isDataTable("#datatable-editable")) {
+            $("#datatable-editable").DataTable().clear().destroy();
+        }
+
+        $("#datatable-editable").DataTable({
+            processing: true,
+            serverSide: true,
+            responsive: true,
+            ajax: {
+                url: "/CompanyUI/GetAllCompanies",
+                type: "GET",
+                dataType: 'json',
+                data: function (d) {
+                    return {
+                        draw: d.draw,
+                        start: d.start,
+                        length: d.length,
+                        searchValue: d.search.value
+                    };
+                }
+            },
+            columns: [
+                {
+                    data: "compname",
+                    name: "Company Name",
+                    autoWidth: true,
+                },
+                {
+                    data: "abn",
+                    name: "ABN",
+                    autoWidth: true,
+                },
+                {
+                    data: "addr1",
+                    name: "Address",
+                    autoWidth: true,
+                },
+                {
+                    data: "city",
+                    name: "City",
+                    autoWidth: true,
+                    // className: "dt-head-center dt-body-center",
+                },
+
+                // {
+                //     data: "isDeleted",
+                //     name: "IsDeleted",
+                //     autoWidth: true,
+                //     className: "dt-head-center dt-body-center",
+                //     render: function (data, type, row) {
+                //         var checked = data ? 'checked' : '';
+                //         return `<input type="checkbox" ${checked} disabled>`;
+                //     }
+                // },
+                // <a href="/Company/Details/${row.id}" class= "icon-btn btn-info btn-sm" >
+                // <i class="bi bi-info-square" > </i>
+                // < /a>
+                {
+                    orderable: false,
+                    className: 'actions-column',
+                    render: function (data, type, row) {
+                        return `
+                        <a href="/CompanyUI/Edit/${row.id}" class="icon-btn btn-primary btn-sm">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <a href="/CompanyUI/Details/${row.id}" class="icon-btn btn-info btn-sm">
+                            <i class="bi bi-info-square"></i>
+                        </a>
+                        <a onclick="confirmDelete('${row.id}')" class="icon-btn btn-danger btn-sm" title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    `;
+
+                    }
+                }
+
+
+            ]
+        });
+    }
+
+    function confirmDelete(id) {
+        const isConfirmed = confirm("Are you sure you want to delete?");
+        if (isConfirmed) {
+            // Proceed with deletion logic, possibly an AJAX request to your server
+            deleteCompany(id);
+            ;
+        }
+    }
+    function deleteCompany(companyId) {
+        $.ajax({
+            url: '/CompanyUI/Delete',
+            type: 'POST',
+            data: { id: companyId },
+            success: function (result) {
+                if (result.success) {
+                    alert(result.message);
+                    $('#datatable-editable').DataTable().ajax.reload();
+                } else {
+                    alert(result.message);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert("Error occurred: " + thrownError);
+            }
+        });
+    }
+</script>

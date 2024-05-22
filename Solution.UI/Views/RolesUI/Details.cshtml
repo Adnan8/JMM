@@ -1,0 +1,340 @@
+﻿@model Solution.Common.ViewModel.RoleVM
+
+@{
+    ViewData["Title"] = "Details Company";
+    Layout = "~/Views/Shared/_Layout.cshtml";   
+}
+
+<header class="page-header">
+    <h2>Role</h2>
+
+    <div class="right-wrapper text-end">
+        <ol class="breadcrumbs">
+            <li>
+                <a asp-controller="Home" asp-action="Index">
+                    <i class="bx bx-home-alt"></i>
+                </a>
+            </li>
+            <li><span><a href="@Url.Action("Index", "RolesUI")">Role</a></span></li>
+            <li><span>Details</span></li>
+        </ol>
+        <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fas fa-chevron-left"></i></a>
+    </div>
+</header>
+<section class="card">
+    <header class="card-header">
+        <div class="card-actions">
+            @* <a href="@Url.Action("Edit", "RolesUI", new { id = Model.Id })" class="btn btn-primary btn-square" title="Add">
+                <i class="bi bi-pencil"></i>
+            </a> *@
+        </div>
+        <h2 class="card-title">Roles Detail - @Model.Name</h2>
+    </header>
+    <div class="card-body">
+        <form  asp-action="" method="post">
+            <!-- Adjusted row with an offset to center the form -->
+            <div class="row justify-content-md-center">
+				<div class="tabs">
+					<ul class="nav nav-tabs tabs-primary">
+						<li class="nav-item active">
+							<button class="nav-link" data-bs-target="#overview" data-bs-toggle="tab">Role Menus</button>
+						</li>
+						<li class="nav-item">
+							<button class="nav-link" data-bs-target="#edit" data-bs-toggle="tab">Role Permissions</button>
+						</li>
+					</ul>
+					<div class="tab-content">
+						<div id="overview" class="tab-pane active">
+                            <table class="table table-bordered table-striped mb-0" id="MenuTable">
+                                <thead>
+                                    <tr>
+                                        <th>Select</th>
+                                        <th>Title</th>
+                                        <th>Description</th>
+                                        <th>Parent ID</th>
+                                        <th>Icon</th>
+                                        <th>URL</th>
+                                        <th>Menu Order</th>
+                                        <th>Controller</th>
+                                        <th>Page</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                            <div class="form-group" style="float:right;">
+                                <button type="button" onclick="saveMenus()" class="btn btn-primary" style="float:right;">Save</button>
+                            </div>
+
+						</div>
+						<div id="edit" class="tab-pane">
+                            <table class="table table-bordered table-striped mb-0" id="permissionTable">
+                                <thead>
+                                    <tr>
+                                        <th>Select</th>
+                                        <th>Permission Name</th>
+                                        <th>Controller</th>
+                                        <th>Action</th>
+                                        <th>OperationType</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                            <div class="form-group" style="float:right;">
+                                <button type="button" onclick="savePermissions()" class="btn btn-primary" style="float:right;">Save</button>
+                            </div>
+
+						</div>
+					</div>
+				</div>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+    <script>
+    $(document).ready(function () {
+        var roleId = "@Model.Id";
+        LoadMenus(roleId); 
+        LoadPermission(roleId); 
+    });
+    function LoadMenuForRole(roleId) {
+        debugger;
+        $.ajax({
+            url: "/RoleMenuUI/GetMenusForRole?roleId=" + roleId,
+            type: "GET",
+            dataType: 'json',
+            success: function (response) {
+                debugger;
+                console.log("Response:", response);
+                $(".menuCheckbox").prop('checked', false);
+
+                if (response && Array.isArray(response) && response.length > 0) {
+                    console.log("Processing response array.");
+                    response.forEach(function (menuId) {
+                        console.log("Menu ID:", menuId);
+                        var selector = ".menuCheckbox[data-menu-id='" + menuId + "']";
+                        console.log("Selector:", selector);
+                        if ($(selector).length === 0) {
+                            console.log("No element found for Menu ID:", menuId);
+                        } else {
+                            $(selector).prop('checked', true);
+                        }
+                    });
+                } else {
+                    console.log("No menu items are available for the selected role or unexpected response structure.");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error loading menus for the selected role:", error);
+            }
+        });
+    }
+    function LoadMenus(roleId) {
+        if ($.fn.dataTable.isDataTable("#MenuTable")) {
+            $("#MenuTable").DataTable().clear().destroy();
+        }
+
+        $("#MenuTable").DataTable({
+            processing: true,
+            serverSide: true,
+            responsive: true,
+            ajax: {
+                url: "/MenuUI/GetAllMenu",
+                type: "GET",
+                dataType: 'json',
+                data: function (d) {
+                    return {
+                        draw: d.draw,
+                        start: d.start,
+                        length: d.length,
+                        searchValue: d.search.value
+                    };
+                }
+            },
+            columns: [
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        return '<input type="checkbox" class="menuCheckbox" data-menu-id="' + row.id + '" >';
+                    }
+                },
+                { data: "title", name: "Title" },
+                { data: "descr", name: "Description" },
+                { data: "parentId", name: "Parent ID" },
+                { data: "icon", name: "Icon" },
+                { data: "url", name: "URL" },
+                { data: "menuOrder", name: "Menu Order" },
+                { data: "controller", name: "Controller" },
+                { data: "page", name: "Page" }
+            ],
+            initComplete: function (settings, json) {
+                // Call LoadMenuForRole here after DataTable is initialized and data loaded
+                if (roleId) {
+                    LoadMenuForRole(roleId);
+                }
+            },
+            drawCallback: function (settings) {
+                // This ensures checkboxes are correctly checked even after a redraw event
+                if (roleId) {
+                    LoadMenuForRole(roleId);
+                }
+            }
+        });
+    }
+    function saveMenus() {
+        debugger;
+        var selectedMenus = [];
+        //var dropdown = document.getElementById('rolesDropdown');
+        //var roleId = dropdown.value;
+        var roleId = "@Model.Id";
+        var table = $("#MenuTable").DataTable();
+
+        $(".menuCheckbox:checked").each(function () {
+            var row = $(this).closest('tr');
+            var rowData = table.row(row).data();
+            var menuId = rowData.id;
+            selectedMenus.push(menuId);
+        });
+
+        var requestData = {
+            RoleId: roleId,
+            RoleMenuId: selectedMenus
+        };
+
+        $.ajax({
+            url: "/RoleMenuUI/Create",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(requestData),
+            success: function (response) {
+                alert("Role menus Updated successfully!");
+                //window.location.href = "/RoleMenuUI/Index";
+            },
+            error: function (xhr, status, error) {
+                alert("Error saving role menus: " + error);
+            }
+        });
+    }
+    function LoadPermissionForRole(roleId) {
+        debugger;
+        $.ajax({
+            url: "/RolePermissionUI/GetPermissionsForRole?roleId=" + roleId,
+            type: "GET",
+            dataType: 'json',
+            success: function (response) {
+                debugger;
+                $(".permissionCheckbox").prop('checked', false);
+                if (response && Array.isArray(response)) {
+                    response.forEach(function (permissionId) {
+                        $(".permissionCheckbox[data-permission-id='" + permissionId + "']").prop('checked', true);
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                alert("Error loading permissions for the selected role: " + error);
+            }
+        });
+    }
+    function LoadPermission(roleId) {
+        if ($.fn.dataTable.isDataTable("#permissionTable")) {
+            $("#permissionTable").DataTable().clear().destroy();
+        }
+
+        $("#permissionTable").DataTable({
+            processing: true,
+            serverSide: true,
+            responsive: true,
+            ajax: {
+                url: "/PermissionUI/GetAllPermission",
+                type: "GET",
+                dataType: 'json',
+                data: function (d) {
+                    return {
+                        draw: d.draw,
+                        start: d.start,
+                        length: d.length,
+                        searchValue: d.search.value
+                    };
+                }
+            },
+            columns: [
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        return '<input type="checkbox" class="permissionCheckbox" data-permission-id="' + row.id + '">';
+                    }
+                },
+                {
+                    data: "permissionName",
+                    name: "Permission Name",
+                    autoWidth: true,
+                },
+                {
+                    data: "controller",
+                    name: "Controller",
+                    autoWidth: true,
+                },
+                {
+                    data: "action",
+                    name: "Action",
+                    autoWidth: true,
+                },
+                {
+                    data: "operationType",
+                    name: "OperationType",
+                    autoWidth: true,
+                }
+            ],
+            initComplete: function (settings, json) {
+                if (roleId) {
+                    LoadPermissionForRole(roleId);
+                }
+            },
+            drawCallback: function (settings) {
+                if (roleId) {
+                    LoadPermissionForRole(roleId); 
+                }
+            }
+        });
+    }
+    function savePermissions() {
+        debugger;
+        var selectedPermissions = [];
+        //var dropdown = document.getElementById('rolesDropdown');
+        var roleId = "@Model.Id";
+        var table = $("#permissionTable").DataTable();
+
+        $(".permissionCheckbox:checked").each(function () {
+            var row = $(this).closest('tr');
+            var rowData = table.row(row).data();
+            var permissionId = rowData.id;
+            selectedPermissions.push(permissionId);
+        });
+
+        var requestData = {
+            RolePermissionId: selectedPermissions,
+            roleId: roleId
+        };
+
+        $.ajax({
+            url: "/RolePermissionUI/Create",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(requestData),
+            success: function (response) {
+                alert("Role Permissions Updated successfully!");
+               // window.location.href = "/RolePermissionUI/Index";
+            },
+            error: function (xhr, status, error) {
+            }
+        });
+    }
+    </script>                        

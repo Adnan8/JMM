@@ -1,0 +1,70 @@
+﻿@model Solution.Common.ViewModel.DDLDtlsVM
+
+@{
+    ViewData["Title"] = "Details Ddlhdr";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2>Ddlhdr</h2>
+
+    <div class="right-wrapper text-end">
+        <ol class="breadcrumbs">
+            <li>
+                <a asp-controller="Home" asp-action="Index">
+                    <i class="bx bx-home-alt"></i>
+                </a>
+            </li>
+            <li><span><a href="@Url.Action("Index", "DdlhdrUI")">Ddlhdr</a></span></li>
+            <li><span>Edit</span></li>
+        </ol>
+        <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fas fa-chevron-left"></i></a>
+    </div>
+</header>
+<section class="card col-md-6">
+    <header class="card-header">
+        <div class="card-actions">
+            <a href="@Url.Action("Edit", "DDLDtlsUI", new { id = Model.Id })" class="btn btn-primary btn-square" title="Add">
+                <i class="bi bi-pencil"></i>
+            </a>
+        </div>
+        <h2 class="card-title">Ddlhdr Detail</h2>
+    </header>
+    <div class="card-body">
+        <form asp-action="" method="post">
+            <div class="row">
+                <input asp-for="DdlhdrId" class="form-control" hidden />
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label asp-for="Ddltxt" class="control-label">Ddltxt</label>
+                        <input asp-for="Ddltxt" class="form-control" disabled />
+                        <span asp-validation-for="Ddltxt" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label asp-for="Ddlorder" class="control-label">Ddlorder </label>
+                        <input asp-for="Ddlorder" class="form-control" disabled />
+                        <span asp-validation-for="Ddlorder" class="text-danger"></span>
+                    </div>
+                </div>
+
+            </div>
+
+            <br />
+            <br />
+            <br />
+
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

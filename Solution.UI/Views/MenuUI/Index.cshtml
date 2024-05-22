@@ -1,0 +1,143 @@
+﻿@{
+    ViewData["Title"] = "Menu List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2>Menu</h2>
+
+    <div class="right-wrapper text-end">
+        <ol class="breadcrumbs">
+            <li>
+                <a asp-controller="Home" asp-action="Index">
+                    <i class="bx bx-home-alt"></i>
+                </a>
+            </li>
+            <li><span>Menu</span></li>
+            <li><span>Index</span></li>
+        </ol>
+        <a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fas fa-chevron-left"></i></a>
+    </div>
+</header>
+<!-- start: page -->
+<section class="card">
+    <header class="card-header">
+        <div class="card-actions">
+            <a href="@Url.Action("Create", "MenuUI")" class="btn btn-primary btn-square" title="Add">
+                <i class="bi bi-plus"></i>
+            </a>
+        </div>
+
+        <h2 class="card-title">Menu</h2>
+    </header>
+    <div class="card-body">
+        <table class="table table-bordered table-striped mb-0" id="MenuTable">
+            <thead>
+                <tr>
+
+                    <th>Title</th>
+                    @* <th>Description</th> *@
+                    <th>Parent ID</th>
+                    @* <th>Icon</th> *@
+                    <th>URL</th>
+                    @* <th>Menu Order</th> *@
+                    <th>Controller</th>
+                    <th>Page</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be populated by DataTables -->
+            </tbody>
+        </table>
+
+    </div>
+</section>
+<!-- end: page -->
+<script>
+    $(document).ready(function () {
+        LoadMenus();
+    });
+
+    function LoadMenus() {
+        if ($.fn.dataTable.isDataTable("#MenuTable")) {
+            $("#MenuTable").DataTable().clear().destroy();
+        }
+
+        $("#MenuTable").DataTable({
+            processing: true,
+            serverSide: true,
+            responsive: true,
+            ajax: {
+                url: "/MenuUI/GetAllMenu", // Update the URL based on your controller's action
+                type: "GET",
+                dataType: 'json',
+                data: function (d) {
+                    return {
+                        draw: d.draw,
+                        start: d.start,
+                        length: d.length,
+                        searchValue: d.search.value
+                    };
+                }
+            },
+            columns: [
+                { data: "title", name: "Title" },
+                // { data: "descr", name: "Description" },
+                { data: "parentId", name: "Parent ID" },
+                // { data: "icon", name: "Icon" },
+                { data: "url", name: "URL" },
+                // { data: "menuOrder", name: "Menu Order" },
+                { data: "controller", name: "Controller" },
+                { data: "page", name: "Page" },
+                {
+                    orderable: false,
+                    className: 'actions-column',
+                    render: function (data, type, row) {
+                        return `
+                                <a href="/MenuUI/Edit/${row.id}" class="icon-btn btn-primary btn-sm">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                                <a href="/MenuUI/Details/${row.id}" class="icon-btn btn-info btn-sm">
+                                <i class="bi bi-info-square"></i>
+                            </a>
+                            <a onclick="confirmDelete('${row.id}')" class="icon-btn btn-danger btn-sm" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        `;
+
+                    }
+                }
+               
+            ]
+        });
+    }
+
+    function confirmDelete(id) {
+        const isConfirmed = confirm("Are you sure you want to delete?");
+        if (isConfirmed) {
+            // Proceed with deletion logic, possibly an AJAX request to your server
+            deleteCompany(id);
+            ;
+        }
+    }
+    function deleteCompany(companyId) {
+        $.ajax({
+            url: '/MenuUI/Delete',
+            type: 'POST',
+            data: { id: companyId },
+            success: function (result) {
+                if (result.success) {
+                    alert(result.message);
+                    $('#MenuTable').DataTable().ajax.reload();
+                } else {
+                    alert(result.message);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert("Error occurred: " + thrownError);
+            }
+        });
+
+    }
+</script>

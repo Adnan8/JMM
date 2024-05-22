@@ -1,0 +1,67 @@
+﻿@model Solution.Common.ViewModel.UserVM
+@{
+    Layout = "~/Views/Shared/_Layout1.cshtml";
+}
+
+<section class="body-sign">
+    <div class="center-sign">
+        <a href="/" class="logo float-left">
+            <img src="~/img/logo.png" height="70" alt="Porto Admin" />
+        </a>
+
+        <div class="panel card-sign">
+            <div class="card-title-sign mt-3 text-end">
+                <h2 class="title text-uppercase font-weight-bold m-0"><i class="bx bx-user-circle me-1 text-6 position-relative top-5"></i> Sign In</h2>
+            </div>
+            <div class="card-body">
+                <form asp-controller="AccountUI" asp-action="Login" method="post">
+
+                    <!-- Add this line for validation summary -->
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="form-group mb-3">
+                        <label for="Email">Email</label>
+                        <div class="input-group">
+                            <input asp-for="Email" class="form-control bg-transparent" placeholder="name@example.com" />
+                            <div class="input-group-append">
+                                <span class="input-group-text"><i class="bx bx-user text-4"></i></span>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="Password">Password</label>
+                        <div class="input-group">
+                            <input asp-for="Password" class="form-control bg-transparent" placeholder="password" />
+                            <div class="input-group-append">
+                                <span class="input-group-text"><i class="bx bx-lock text-4"></i></span>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <div class="checkbox-custom checkbox-default">
+                                <input asp-for="RememberMe" class="form-check-input" id="RememberMe" />
+                                <label class="form-check-label" for="RememberMe">Remember Me</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 text-end">
+                            <button type="submit" class="btn btn-primary mt-2">Sign In</button>
+                        </div>
+                    </div>
+                    <p class="text-center">Don't have an account yet? <a asp-action="Register">Sign Up!</a></p>
+                </form>
+            </div>
+        </div>
+
+        <p class="text-center text-muted mt-3 mb-3">&copy; Copyright 2024. All Rights Reserved.</p>
+    </div>
+</section>
+<style>
+    .input-group-text {
+        padding: 1rem 0.75rem;
+    }
+</style>
